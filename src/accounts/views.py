@@ -7,14 +7,23 @@ from src.accounts.models import User
 from .forms import LoginForm, RegisterForm
 from datetime import timedelta, datetime
 
+from .mixins import AdminRequiredMixin
+
 accounts_bp = Blueprint("accounts", __name__)
 
 
 @accounts_bp.route("/register", methods=["GET", "POST"])
 def register():
+    # Ensure that only admins can access the registration page
+    admin_check = AdminRequiredMixin().is_admin_required()
+    if admin_check:
+        return admin_check  # If not an admin, return the redirect
+
+    """
     if current_user.is_authenticated:
         flash("You are already registered.", "info")
         return redirect(url_for("core.home"))
+    """
     
     form = RegisterForm(request.form)
     if form.validate_on_submit():
@@ -33,9 +42,11 @@ def register():
             db.session.add(user)
             db.session.commit()
 
+            """
             # Log in the user and flash a success message
             login_user(user)
             flash("You registered and are now logged in. Welcome!", "success")
+            """
 
             return redirect(url_for("core.home"))
 
@@ -45,6 +56,7 @@ def register():
             return render_template("accounts/register.html", form=form)
 
     return render_template("accounts/register.html", form=form)
+
 @accounts_bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:

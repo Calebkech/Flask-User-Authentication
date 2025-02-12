@@ -23,6 +23,7 @@ def test():
 @cli.command("create_admin")
 def create_admin():
     """Creates the admin user."""
+    username= input("Enter username: ")
     email = input("Enter email address: ")
     password = getpass.getpass("Enter password: ")
     confirm_password = getpass.getpass("Enter password again: ")
@@ -30,10 +31,10 @@ def create_admin():
         print("Passwords don't match")
         return 1
     try:
-        user = User(email=email, password=password, is_admin=True)
+        user = User(username=username, email=email, password=password, is_admin=True)
         db.session.add(user)
         db.session.commit()
-        print(f"Admin with email {email} created successfully!")
+        print(f"Admin with email {username} created successfully!")
     except Exception:
         print("Couldn't create admin user.")
 
