@@ -11,18 +11,19 @@
         <h1 class="h3 mb-3 fw-normal text-center">Please sign in</h1>
 
         <div class="form-floating">
-          {{ form.email(placeholder="email", class="form-control mb-2") }}
-          {{ form.email.label }}
-            {% if form.email.errors %}
-              {% for error in form.email.errors %}
+          <!-- Updated to use the username field -->
+          {{ form.username(placeholder="Username", class="form-control mb-2") }}
+          {{ form.username.label }}
+          {% if form.username.errors %}
+            {% for error in form.username.errors %}
               <div class="alert alert-danger" role="alert">
                 {{ error }}
               </div>
-              {% endfor %}
-            {% endif %}
+            {% endfor %}
+          {% endif %}
         </div>
         <div class="form-floating">
-          {{ form.password(placeholder="password", class="form-control mb-2") }}
+          {{ form.password(placeholder="Password", class="form-control mb-2") }}
           {{ form.password.label }}
             {% if form.password.errors %}
               {% for error in form.password.errors %}

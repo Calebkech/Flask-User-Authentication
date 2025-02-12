@@ -1,6 +1,14 @@
 from decouple import config
+import os
 
-DATABASE_URI = config("DATABASE_URL")
+# Try to get the DATABASE_URL from the environment variables
+DATABASE_URI = config("DATABASE_URL", default=None)
+
+# If DATABASE_URL is not found or it's a PostgreSQL URI but the database is not available, switch to SQLite
+if DATABASE_URI is None or (DATABASE_URI.startswith("postgres://") and not os.getenv("POSTGRES_AVAILABLE", "false").lower() == "true"):
+    DATABASE_URI = "sqlite:///app.db"  # Default to SQLite for testing
+
+# Replace "postgres://" with "postgresql://" if necessary
 if DATABASE_URI.startswith("postgres://"):
     DATABASE_URI = DATABASE_URI.replace("postgres://", "postgresql://", 1)
 

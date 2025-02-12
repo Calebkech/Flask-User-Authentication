@@ -5,6 +5,7 @@ from src import bcrypt, db
 from src.accounts.models import User
 
 from .forms import LoginForm, RegisterForm
+from datetime import timedelta, datetime
 
 accounts_bp = Blueprint("accounts", __name__)
 
@@ -14,20 +15,36 @@ def register():
     if current_user.is_authenticated:
         flash("You are already registered.", "info")
         return redirect(url_for("core.home"))
+    
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        user = User(email=form.email.data, password=form.password.data)
-        db.session.add(user)
-        db.session.commit()
+        try:
+            # Calculate the expiry date
+            expiry_date = datetime.now() + timedelta(days=form.expiry_days.data)
 
-        login_user(user)
-        flash("You registered and are now logged in. Welcome!", "success")
+            # Create a new user
+            user = User(
+                email=form.email.data,
+                username=form.username.data,
+                password=form.password.data,
+                expiry_date=expiry_date  # Store the expiry date in the database
+            )
 
-        return redirect(url_for("core.home"))
+            db.session.add(user)
+            db.session.commit()
+
+            # Log in the user and flash a success message
+            login_user(user)
+            flash("You registered and are now logged in. Welcome!", "success")
+
+            return redirect(url_for("core.home"))
+
+        except Exception as e:
+            db.session.rollback()  # Rollback the transaction if an error occurs
+            flash(f"An error occurred while registering: {str(e)}", "danger")
+            return render_template("accounts/register.html", form=form)
 
     return render_template("accounts/register.html", form=form)
-
-
 @accounts_bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
@@ -35,12 +52,25 @@ def login():
         return redirect(url_for("core.home"))
     form = LoginForm(request.form)
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, request.form["password"]):
-            login_user(user)
-            return redirect(url_for("core.home"))
-        else:
-            flash("Invalid email and/or password.", "danger")
+        try:
+            # Use the username to query the user
+            user = User.query.filter_by(username=form.username.data).first()
+            
+            if user:
+                # Check if the password matches
+                is_password_correct = bcrypt.check_password_hash(user.password, form.password.data)
+                
+                if is_password_correct:
+                    login_user(user)
+                    flash("Login successful!", "success")
+                    return redirect(url_for("core.home"))
+                else:
+                    flash("Invalid username and/or password.", "danger")
+            else:
+                flash("Invalid username and/or password.", "danger")
+            
+        except Exception as e:
+            flash(f"An error occurred while logging in: {str(e)}", "danger")
             return render_template("accounts/login.html", form=form)
     return render_template("accounts/login.html", form=form)
 
