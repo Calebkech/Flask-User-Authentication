@@ -46,8 +46,6 @@ class TestLoggingInOut(BaseTestCase):
 
     def test_login_with_expired_account(self):
         # Ensure user with expired account cannot log in
-
-        # First, check if the user exists, if not create one
         expired_user = User.query.filter_by(username="expired").first()
 
         if not expired_user:
@@ -65,6 +63,7 @@ class TestLoggingInOut(BaseTestCase):
         db.session.commit()
 
         with self.client:
+            self.client.get("/logout", follow_redirects=True)  # Make sure the user is logged out before the test
             response = self.client.post(
                 "/login",
                 data=dict(username="expired", password="expired_user"),

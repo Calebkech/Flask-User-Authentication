@@ -50,10 +50,11 @@ def login():
     if current_user.is_authenticated:
         flash("You are already logged in.", "info")
         return redirect(url_for("core.home"))
+    
     form = LoginForm(request.form)
     if form.validate_on_submit():
         try:
-            # Use the username to query the user
+            # Query the user by username
             user = User.query.filter_by(username=form.username.data).first()
             
             if user:
@@ -61,6 +62,12 @@ def login():
                 is_password_correct = bcrypt.check_password_hash(user.password, form.password.data)
                 
                 if is_password_correct:
+                    # Check if the user's account is expired
+                    if user.expiry_date and user.expiry_date < datetime.now():
+                        flash("Your account has expired.", "danger")
+                        return render_template("accounts/login.html", form=form)
+                    
+                    # Log the user in if everything is valid
                     login_user(user)
                     flash("Login successful!", "success")
                     return redirect(url_for("core.home"))
@@ -72,6 +79,7 @@ def login():
         except Exception as e:
             flash(f"An error occurred while logging in: {str(e)}", "danger")
             return render_template("accounts/login.html", form=form)
+    
     return render_template("accounts/login.html", form=form)
 
 
