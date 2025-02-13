@@ -17,9 +17,17 @@ class RegisterForm(FlaskForm):
     username = StringField(
         "Username", validators=[DataRequired(), Length(min=4, max=25)]
     )
+    amount = IntegerField(
+        "Amount", validators=[DataRequired(), NumberRange(min=1, message="Amount must be at least 1")]
+    )
     password = PasswordField(
         "Password", validators=[DataRequired(), Length(min=6, max=25)]
     )
+    """
+    created_by = StringField(
+        "Created By", validators=[DataRequired(), Length(min=4, max=25)]
+        )
+    """
     confirm = PasswordField(
         "Repeat password",
         validators=[

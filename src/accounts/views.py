@@ -12,42 +12,41 @@ from .mixins import AdminRequiredMixin
 accounts_bp = Blueprint("accounts", __name__)
 
 
+from datetime import datetime, timedelta
+from flask import request, redirect, url_for, flash, render_template
+from flask_login import current_user
+from src.accounts.forms import RegisterForm
+from src.accounts.models import User
+from src import db
+
 @accounts_bp.route("/register", methods=["GET", "POST"])
 def register():
     # Ensure that only admins can access the registration page
     admin_check = AdminRequiredMixin().is_admin_required()
     if admin_check:
         return admin_check  # If not an admin, return the redirect
-
-    """
-    if current_user.is_authenticated:
-        flash("You are already registered.", "info")
-        return redirect(url_for("core.home"))
-    """
-    
+    logged_in = current_user.username
+    print(f'admin: {logged_in}')
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         try:
-            # Calculate the expiry date
-            expiry_date = datetime.now() + timedelta(days=form.expiry_days.data)
+            # Calculate the expiry date based on the form input
+            expiry_date = datetime.now() + timedelta(days=form.expiry_days.data) if form.expiry_days.data else None
 
             # Create a new user
             user = User(
                 email=form.email.data,
                 username=form.username.data,
                 password=form.password.data,
+                amount=form.amount.data,  # Add the amount field
+                created_by=current_user.username,  # Set created_by to the logged-in admin
                 expiry_date=expiry_date  # Store the expiry date in the database
             )
-
+            print(f'user info: {user}')
             db.session.add(user)
             db.session.commit()
 
-            """
-            # Log in the user and flash a success message
-            login_user(user)
-            flash("You registered and are now logged in. Welcome!", "success")
-            """
-
+            flash("User registered successfully!", "success")
             return redirect(url_for("core.home"))
 
         except Exception as e:

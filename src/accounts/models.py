@@ -12,15 +12,19 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String, nullable=False)
     created_on = db.Column(db.DateTime, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    amount = db.Column(db.Float, nullable=False, default=0)
+    created_by = db.Column(db.String, nullable=False, default='admin')
     expiry_date = db.Column(db.DateTime, nullable=True)
 
-    def __init__(self, email, username, password, is_admin=False, expiry_date=None):
+    def __init__(self, email, username, password, is_admin=False, expiry_date=None, amount=0, created_by='admin'):
         self.email = email
         self.username = username
         self.password = bcrypt.generate_password_hash(password)
         self.created_on = datetime.now()
         self.is_admin = is_admin
         self.expiry_date = expiry_date
+        self.amount = amount
+        self.created_by = created_by
 
     def __repr__(self):
         return f"<email {self.username}>"

@@ -10,7 +10,7 @@
         {{ form.csrf_token }}
         <h1 class="h3 mb-3 fw-normal text-center">Please register</h1>
 
-        <!-- Username field added -->
+        <!-- Username field -->
         <div class="form-floating">
           {{ form.username(placeholder="Username", class="form-control mb-2") }}
           {{ form.username.label }}
@@ -23,55 +23,72 @@
           {% endif %}
         </div>
 
+        <!-- Email field -->
         <div class="form-floating">
           {{ form.email(placeholder="Email", class="form-control mb-2") }}
           {{ form.email.label }}
-            {% if form.email.errors %}
-              {% for error in form.email.errors %}
-                <div class="alert alert-danger" role="alert">
-                  {{ error }}
-                </div>
-              {% endfor %}
-            {% endif %}
+          {% if form.email.errors %}
+            {% for error in form.email.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
         </div>
 
+        <!-- Password field -->
         <div class="form-floating">
           {{ form.password(placeholder="Password", class="form-control mb-2") }}
           {{ form.password.label }}
-            {% if form.password.errors %}
-              {% for error in form.password.errors %}
-                <div class="alert alert-danger" role="alert">
-                  {{ error }}
-                </div>
-              {% endfor %}
-            {% endif %}
+          {% if form.password.errors %}
+            {% for error in form.password.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
         </div>
 
+        <!-- Confirm Password field -->
         <div class="form-floating">
           {{ form.confirm(placeholder="Confirm Password", class="form-control mb-2") }}
           {{ form.confirm.label }}
-            {% if form.confirm.errors %}
-              {% for error in form.confirm.errors %}
-                <div class="alert alert-danger" role="alert">
-                  {{ error }}
-                </div>
-              {% endfor %}
-            {% endif %}
+          {% if form.confirm.errors %}
+            {% for error in form.confirm.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
         </div>
 
-        <!-- Expiry days field added -->
+        <!-- Amount field -->
+        <div class="form-floating">
+          {{ form.amount(placeholder="Amount", class="form-control mb-2") }}
+          {{ form.amount.label }}
+          {% if form.amount.errors %}
+            {% for error in form.amount.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Expiry days field -->
         <div class="form-floating">
           {{ form.expiry_days(placeholder="Expiry (in days)", class="form-control mb-2") }}
           {{ form.expiry_days.label }}
-            {% if form.expiry_days.errors %}
-              {% for error in form.expiry_days.errors %}
-                <div class="alert alert-danger" role="alert">
-                  {{ error }}
-                </div>
-              {% endfor %}
-            {% endif %}
+          {% if form.expiry_days.errors %}
+            {% for error in form.expiry_days.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
         </div>
 
+        <!-- Submit button -->
         <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
         <p class="text-center mt-3">Already registered? <a href="{{ url_for('accounts.login') }}">Login now</a></p>
       </form>

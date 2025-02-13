@@ -32,10 +32,21 @@ def load_user(user_id):
     return User.query.filter(User.id == int(user_id)).first()
 
 
+##########################
+#### Database Setup  ####
+##########################
+
+def create_database():
+    with app.app_context():
+        db.create_all()
+        print("Database tables created successfully.")
+# Create database tables and print registered models
+create_database()
+
+
 ########################
 #### error handlers ####
 ########################
-
 
 @app.errorhandler(401)
 def unauthorized_page(error):
@@ -50,3 +61,7 @@ def page_not_found(error):
 @app.errorhandler(500)
 def server_error_page(error):
     return render_template("errors/500.html"), 500
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
