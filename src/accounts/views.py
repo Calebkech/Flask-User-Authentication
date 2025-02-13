@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, abort
 from flask_login import login_required, login_user, logout_user, current_user
 
 from src import bcrypt, db
@@ -22,11 +22,10 @@ from src import db
 @accounts_bp.route("/register", methods=["GET", "POST"])
 def register():
     # Ensure that only admins can access the registration page
-    admin_check = AdminRequiredMixin().is_admin_required()
-    if admin_check:
-        return admin_check  # If not an admin, return the redirect
-    logged_in = current_user.username
-    print(f'admin: {logged_in}')
+    admin_check = AdminRequiredMixin().is_admin()
+    if not admin_check:  # If not an admin, trigger 404
+        abort(404)  # This will render your 404 error page
+
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         try:
@@ -42,7 +41,7 @@ def register():
                 created_by=current_user.username,  # Set created_by to the logged-in admin
                 expiry_date=expiry_date  # Store the expiry date in the database
             )
-            print(f'user info: {user}')
+
             db.session.add(user)
             db.session.commit()
 
