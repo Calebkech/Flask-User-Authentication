@@ -19,7 +19,7 @@ from src.accounts.forms import RegisterForm
 from src.accounts.models import User
 from src import db
 
-@accounts_bp.route("/register", methods=["GET", "POST"])
+@accounts_bp.route('/register', methods=["GET", "POST"])
 def register():
     # Ensure that only admins can access the registration page
     admin_check = AdminRequiredMixin().is_admin()
@@ -99,3 +99,7 @@ def logout():
     logout_user()
     flash("You were logged out.", "success")
     return redirect(url_for("accounts.login"))
+
+@accounts_bp.route('/terms')
+def terms():
+    return render_template('accounts/terms.html')

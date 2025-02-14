@@ -1,44 +1,104 @@
-{% extends "_base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitflow Analysis Tool - Login</title>
+    <meta name="description" content="Login to Digitflow Analysis Tool to access advanced trading analysis and insights. Join now for premium features and tools.">
+    <meta name="keywords" content="Digitflow, trading analysis, trading tools, login, trading insights, forex, deriv">
+    <meta name="author" content="Digitflow">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://yourwebsite.com/login" />
+    <meta property="og:title" content="Digitflow Analysis Tool - Login">
+    <meta property="og:description" content="Login to Digitflow Analysis Tool to access advanced trading analysis and insights. Join now for premium features and tools.">
+    <meta property="og:image" content="https://yourwebsite.com/static/media/images/logo.png">
+    <meta property="og:url" content="https://yourwebsite.com/login">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Digitflow Analysis Tool - Login">
+    <meta name="twitter:description" content="Login to Digitflow Analysis Tool to access advanced trading analysis and insights. Join now for premium features and tools.">
+    <meta name="twitter:image" content="https://yourwebsite.com/static/media/images/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body style="background-color: #fea2a5;">
+    <div class="min-h-screen flex flex-col items-center justify-center py-8">
+            <!-- Login Section -->
+            <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                <img src="{{ url_for('static', filename='media/images/logo.png') }}" alt="Digit Flow Logo" class="w-36 mx-auto mb-6">
+                <h2 class="text-2xl font-bold mb-6">Login</h2>
 
-{% block content %}
+                <!-- Flash Messages for Errors -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} mb-4 p-3 rounded text-sm {{ 'bg-red-100 text-red-700' if category == 'danger' else 'bg-green-100 text-green-700' }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
-<div class="row">
-  <div class="col-md-4"></div>
-  <div class="col-md-4">
-    <main class="form-signin w-100 m-auto">
-      <form role="form" method="post" action="">
-        {{ form.csrf_token }}
-        <h1 class="h3 mb-3 fw-normal text-center">Please sign in</h1>
+                <form role="form" method="post" action="" class="space-y-4">
+                    {{ form.csrf_token }}
+                    <div>
+                        {{ form.username(placeholder="Username", class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500") }}
+                        {% if form.username.errors %}
+                            {% for error in form.username.errors %}
+                                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div>
+                        {{ form.password(placeholder="Password", class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500") }}
+                        {% if form.password.errors %}
+                            {% for error in form.password.errors %}
+                                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="w-full text-white py-2 rounded-lg transition duration-300 hover:bg-[#0177a3]"
+                        style="background-color: #018dba;"
+                    >
+                        Sign in
+                    </button>
+                </form>
 
-        <div class="form-floating">
-          <!-- Updated to use the username field -->
-          {{ form.username(placeholder="Username", class="form-control mb-2") }}
-          {{ form.username.label }}
-          {% if form.username.errors %}
-            {% for error in form.username.errors %}
-              <div class="alert alert-danger" role="alert">
-                {{ error }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        </div>
-        <div class="form-floating">
-          {{ form.password(placeholder="Password", class="form-control mb-2") }}
-          {{ form.password.label }}
-            {% if form.password.errors %}
-              {% for error in form.password.errors %}
-                <div class="alert alert-danger" role="alert">
-                  {{ error }}
+                <div class="mt-6 text-sm space-y-4">
+                    <div>
+                        <small>Don't have an account on Digitflow?</small>
+                    </div>
+                    <div>
+                        <button onclick="openWhatsApp()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300">Get logins</button>
+                        <span class="text-lg font-bold ml-2">@95$</span>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <input type="checkbox" id="termsCheckbox" class="mr-2">
+                        <small>By registering for an account, you agree to our <a href="{{url_for('accounts.terms')}}" target="_blank" class="text-blue-600 hover:underline">Terms of Use.</a></small>
+                    </div>
+                    <div>
+                        <small><a href="https://t.me/+IG6OOivuFyM0OWNk" target="_blank" class="text-blue-600 hover:underline"><b>TELEGRAM</b></a></small>
+                    </div>
+                    <div>
+                        <small><a href="https://track.deriv.com/_qkzI6RYFSLdMjdsyM5hasGNd7ZgqdRLk/1" target="_blank" class="text-blue-600 hover:underline"><b>Sign up Deriv</b></a></small>
+                    </div>
                 </div>
-              {% endfor %}
-            {% endif %}
+            </div>
         </div>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-        <p class="text-center mt-3">New User? <a href="{{ url_for('accounts.register') }}">Register now</a></p>
-      </form>
-    </main>
-  </div>
-  <div class="col-md-4"></div>
-</div>
 
-{% endblock %}
+        <!-- Chart Section -->
+        <div class="mt-8 w-full max-w-full">
+            <iframe src="https://charts.deriv.com/deriv?symbols=EURUSD&theme=light" class="w-full h-[500px] border-none rounded-lg shadow-lg"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function openWhatsApp() {
+            var phoneNumber = '254755996323';
+            var message = "Hello, I'd like to purchase Digitflow logins.";
+            var whatsappUrl = 'https://api.whatsapp.com/send?phone=' + phoneNumber + '&text=' + encodeURIComponent(message);
+            window.open(whatsappUrl);
+        }
+    </script>
+</body>
+</html>
