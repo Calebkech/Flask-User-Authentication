@@ -29,7 +29,7 @@ login_manager.login_message_category = "danger"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.filter(User.id == int(user_id)).first()
+    return User.query.filter(User.id == str(user_id)).first()
 
 
 ##########################
