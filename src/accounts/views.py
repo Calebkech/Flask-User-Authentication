@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from src import bcrypt, db
 from src.accounts.models import User
 
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, UpdateForm
 from datetime import timedelta, datetime
 
 from .mixins import AdminRequiredMixin
@@ -92,6 +92,57 @@ def login():
     
     return render_template("accounts/login.html", form=form)
 
+@accounts_bp.route('/update/<user_id>', methods=["GET", "POST"])
+@login_required
+def update_user(user_id):
+    # Ensure that only admins can access this route
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access for non-admin users
+
+    # Fetch the user to be updated
+    user_to_update = User.query.get_or_404(user_id)
+
+    # Populate the form with the user's current data
+    form = UpdateForm(obj=user_to_update)
+
+    if form.validate_on_submit():
+        try:
+            # Update email if provided
+            if form.email.data:
+                user_to_update.email = form.email.data
+
+            # Update username if provided
+            if form.username.data:
+                user_to_update.username = form.username.data
+
+            # Update password if provided
+            if form.password.data:
+                user_to_update.password = bcrypt.generate_password_hash(form.password.data)
+
+            # Update amount if provided
+            if form.amount.data is not None:
+                user_to_update.amount = form.amount.data
+
+            # Update expiry date if provided
+            if form.expiry_days.data:
+                user_to_update.expiry_date = datetime.now() + timedelta(days=form.expiry_days.data)
+
+            # Update created_by if provided (admin-only field)
+            if form.created_by.data:
+                user_to_update.created_by = form.created_by.data
+
+            # Commit changes to the database
+            db.session.commit()
+
+            flash("User updated successfully!", "success")
+            return redirect(url_for("accounts.update_user", user_id=user_to_update.id))
+
+        except Exception as e:
+            db.session.rollback()  # Rollback in case of an error
+            flash(f"An error occurred while updating the user: {str(e)}", "danger")
+            return render_template("accounts/update_user.html", form=form, user=user_to_update)
+
+    return render_template("accounts/update_user.html", form=form, user=user_to_update)
 
 @accounts_bp.route("/logout")
 @login_required
