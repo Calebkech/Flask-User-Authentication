@@ -92,18 +92,31 @@ def login():
     
     return render_template("accounts/login.html", form=form)
 
+@accounts_bp.route('/users', methods=["GET"])
+@login_required
+def list_users():
+    # Ensure that only admins can access this route
+    if not current_user.is_admin:
+        abort(404)  # page not found for non-admin users
+
+    # Fetch all users from the database
+    users = User.query.all()
+
+    # Render the template with the list of users
+    return render_template("accounts/list_users.html", users=users)
+
 @accounts_bp.route('/update/<user_id>', methods=["GET", "POST"])
 @login_required
 def update_user(user_id):
     # Ensure that only admins can access this route
     if not current_user.is_admin:
-        abort(403)  # Forbidden access for non-admin users
+        abort(404)  # 404 access for non-admin users
 
     # Fetch the user to be updated
     user_to_update = User.query.get_or_404(user_id)
 
-    # Populate the form with the user's current data
-    form = UpdateForm(obj=user_to_update)
+    # Initialize the form with the user's current data and pass the user_id
+    form = UpdateForm(user_id=user_to_update.id, obj=user_to_update)
 
     if form.validate_on_submit():
         try:
@@ -128,14 +141,14 @@ def update_user(user_id):
                 user_to_update.expiry_date = datetime.now() + timedelta(days=form.expiry_days.data)
 
             # Update created_by if provided (admin-only field)
-            if form.created_by.data:
+            if current_user.is_admin and form.created_by.data:
                 user_to_update.created_by = form.created_by.data
 
             # Commit changes to the database
             db.session.commit()
 
             flash("User updated successfully!", "success")
-            return redirect(url_for("accounts.update_user", user_id=user_to_update.id))
+            return redirect(url_for("accounts.list_users", user_id=user_to_update.id))
 
         except Exception as e:
             db.session.rollback()  # Rollback in case of an error

@@ -1,0 +1,102 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-4"></div>
+  <div class="col-md-4">
+    <main class="form-signin w-100 m-auto">
+      <form role="form" method="post" action="">
+        {{ form.csrf_token }}
+        <h1 class="h3 mb-3 fw-normal text-center">Update User: {{ user.username }}</h1>
+
+        <!-- Email field -->
+        <div class="form-floating">
+          {{ form.email(placeholder="Email", class="form-control mb-2") }}
+          {{ form.email.label }}
+          {% if form.email.errors %}
+            {% for error in form.email.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Username field -->
+        <div class="form-floating">
+          {{ form.username(placeholder="Username", class="form-control mb-2") }}
+          {{ form.username.label }}
+          {% if form.username.errors %}
+            {% for error in form.username.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Password field -->
+        <div class="form-floating">
+          {{ form.password(placeholder="Password", class="form-control mb-2") }}
+          {{ form.password.label }}
+          {% if form.password.errors %}
+            {% for error in form.password.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Confirm Password field -->
+        <div class="form-floating">
+          {{ form.confirm_password(placeholder="Confirm Password", class="form-control mb-2") }}
+          {{ form.confirm_password.label }}
+          {% if form.confirm_password.errors %}
+            {% for error in form.confirm_password.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Amount field -->
+        <div class="form-floating">
+          {{ form.amount(placeholder="Amount", class="form-control mb-2") }}
+          {{ form.amount.label }}
+          {% if form.amount.errors %}
+            {% for error in form.amount.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Expiry days field -->
+        <div class="form-floating">
+          {{ form.expiry_days(placeholder="Expiry (in days)", class="form-control mb-2") }}
+          {{ form.expiry_days.label }}
+          {% if form.expiry_days.errors %}
+            {% for error in form.expiry_days.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Submit button -->
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Update</button>
+        <p class="text-center mt-3">
+          <a href="{{ url_for('core.home') }}">Back to Home</a>
+        </p>
+      </form>
+    </main>
+  </div>
+  <div class="col-md-4"></div>
+</div>
+
+{% endblock %}

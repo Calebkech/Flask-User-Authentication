@@ -89,6 +89,13 @@ class UpdateForm(FlaskForm):
         "Account Expiry (days)",
         validators=[Optional(), NumberRange(min=1, message="Days must be at least 1")],
     )
+    created_by = StringField(
+        "Created By", validators=[Optional(), Length(min=4, max=25)]
+    )
+
+    def __init__(self, user_id=None, *args, **kwargs):
+        super(UpdateForm, self).__init__(*args, **kwargs)
+        self.user_id = user_id  # Store the user_id for validation
 
     def validate(self):
         initial_validation = super(UpdateForm, self).validate()
@@ -98,14 +105,14 @@ class UpdateForm(FlaskForm):
         # Check if email is already registered (if email is being updated)
         if self.email.data:
             user_by_email = User.query.filter_by(email=self.email.data).first()
-            if user_by_email and user_by_email.id != self.id:
+            if user_by_email and user_by_email.id != self.user_id:
                 self.email.errors.append("Email already registered")
                 return False
 
         # Check if username is already taken (if username is being updated)
         if self.username.data:
             user_by_username = User.query.filter_by(username=self.username.data).first()
-            if user_by_username and user_by_username.id != self.id:
+            if user_by_username and user_by_username.id != self.user_id:
                 self.username.errors.append("Username already taken")
                 return False
 
