@@ -157,6 +157,28 @@ def update_user(user_id):
 
     return render_template("accounts/update_user.html", form=form, user=user_to_update)
 
+@accounts_bp.route('/delete/<user_id>', methods=["POST"])
+@login_required
+def delete_user(user_id):
+    # Ensure that only admins can access this route
+    if not current_user.is_admin:
+        abort(403)  # Forbidden access for non-admin users
+
+    # Fetch the user to be deleted
+    user_to_delete = User.query.get_or_404(user_id)
+
+    try:
+        # Delete the user from the database
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash("User deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of an error
+        flash(f"An error occurred while deleting the user: {str(e)}", "danger")
+
+    # Redirect back to the list of users
+    return redirect(url_for("accounts.list_users"))
+
 @accounts_bp.route("/logout")
 @login_required
 def logout():
