@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitflow Analysis Tool Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/s2.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/s3.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/s4.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/s5.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/s6.css') }}">
+</head>
+<body>
+    <div class="container" id="dashboard">
+        <button class="start-analysis-small" onclick="location.reload()" style="width: 100px; height: 30px; display: inline-flex; align-items: center; justify-content: center; background-color: #28a745; color: white; font-size: 12px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; text-align: center;">Reload</button>
+
+        <button class="stop-analysis-small" onclick="stopAnalysis()" style="width: 100px; height: 30px; display: inline-flex; align-items: center; justify-content: center; background-color: #dc3545; color: white; font-size: 12px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; text-align: center;">Signout</button>
+        
+        <button id="stopAnalysisButton" class="custom-button" style="width: 100px; height: 30px; display: inline-flex; align-items: center; justify-content: center; background-color: rgb(245, 12, 12); color: white; font-size: 12px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; text-align: center;">Stop Analysis</button>
+        
+        <div class="header">
+            <label for="volatilityDropdown">Select Volatility:</label>
+            <select id="volatilityDropdown" class="marketSelection">
+                <option value="R_10">Volatility 10 Index</option>
+                <option value="1HZ10V">Volatility 10 (1s) Index</option>
+                <option value="R_25">Volatility 25 Index</option>
+                <option value="1HZ25V">Volatility 25 (1s) Index</option>
+                <option value="R_50">Volatility 50 Index</option>
+                <option value="1HZ50V">Volatility 50 (1s) Index</option>
+                <option value="R_75">Volatility 75 Index</option>
+                <option value="1HZ75V">Volatility 75 (1s) Index</option>
+                <option value="R_100">Volatility 100 Index</option>
+                <option value="1HZ100V" selected>Volatility 100 (1s) Index</option>
+            </select>
+        </div>
+
+        <div class="header">
+            <label for="strategyDropdown">Select Strategy:</label>
+            <select id="strategyDropdown" class="strategy">
+                <option class="strategy4"><b>Matches</b></option>
+                <option class="strategy1"><b>Over</b></option>
+                <option class="strategy2"><b>Under</b></option>
+                <option class="strategy3"><b>Even</b></option>
+                <option class="strategy4"><b>Odd</b></option>
+                <option class="strategy4"><b>Differs</b></option>
+                <option class="strategy4"><b>Rise</b></option>
+                <option class="strategy4"><b>Fall</b></option>
+            </select>
+        </div>
+
+        <div id="priceDisplay" class="price">Digitflow.</div>
+        <div class="grid">
+            <div class="grid-item" id="gridItem1">0</div>
+            <div class="grid-item" id="gridItem2">1</div>
+            <div class="grid-item" id="gridItem3">2</div>
+            <div class="grid-item" id="gridItem4">3</div>
+            <div class="grid-item" id="gridItem5">4</div>
+            <div class="grid-item" id="gridItem6">5</div>
+            <div class="grid-item" id="gridItem7">6</div>
+            <div class="grid-item" id="gridItem8">7</div>
+            <div class="grid-item" id="gridItem9">8</div>
+            <div class="grid-item" id="gridItem10">9</div>
+        </div>
+
+        <div class="prediction-container">
+            <button id="predictButton" class="predict-button" onclick="predictNumber()">Predict</button>
+            <div id="predictedDigit" class="predicted-digit">--</div>
+            <div id="countdown" class="countdown">--</div>
+        </div>
+
+        <div class="choices">
+            <div class="choose">
+                <label for="over_choice"><b>OVER</b></label>
+                <div class="over_choice" id="over_choice">
+                    <button class="over_button_one"><b>1</b></button>
+                    <button class="over_button_two"><b>2</b></button>
+                    <button class="over_button_three"><b>3</b></button>
+                    <button class="over_button_four"><b>4</b></button>
+                    <button class="over_button_five"><b>5</b></button>
+                    <button class="over_button_six"><b>6</b></button>
+                    <button class="over_button_seven"><b>7</b></button>
+                    <button class="over_button_eight"><b>8</b></button>
+                </div>
+            </div>
+
+            <div class="choice_two">
+                <label for="under_choice"><b>UNDER</b></label>
+                <div class="under_choice" id="under_choice">
+                    <button class="under_button_one">1</button>
+                    <button class="under_button_two">2</button>
+                    <button class="under_button_three">3</button>
+                    <button class="under_button_four">4</button>
+                    <button class="under_button_five">5</button>
+                    <button class="under_button_six">6</button>
+                    <button class="under_button_seven">7</button>
+                    <button class="under_button_eight">8</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-bars">
+            <div id="topProgressContainer" class="progress-container">
+                <div id="topProgress" class="progress-bar"></div>
+                <span id="topPercentage" class="percentage-text">0%</span>
+            </div>
+            <div id="bottomProgressContainer" class="progress-container">
+                <div id="bottomProgress" class="progress-bar"></div>
+                <span id="bottomPercentage" class="percentage-text">0%</span>
+            </div>
+        </div>
+
+        <script>
+            let lastScrollTop = 0;
+            const footer = document.getElementById("footer");
+
+            window.addEventListener("scroll", function() {
+                let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (currentScroll > lastScrollTop) {
+                    footer.style.display = "block";
+                } else {
+                    footer.style.display = "none";
+                }
+                lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+            });
+        </script>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/s1.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/s2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/s3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/s6.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/s7.js') }}"></script>
+</body>
+</html>
